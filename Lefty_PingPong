@@ -1,0 +1,97 @@
+import random
+
+# Establish the list of play probabilities (100% play, but 5x pop.
+
+probabilities = [1, 1, 1, 1, 1]
+
+hand = ['right', 'right', 'right', 'right', 'right', 'right', 'right', 'right', 'right', 'left']
+
+population = []
+
+x = 0
+
+# This section sets up the population. Each element is a person. w is their hand, v how likely they are to play,
+#x their number in the population, and the final element is the number of games against the other hand they have played.
+
+for i, v in enumerate(probabilities):
+    for j, w in enumerate(hand):
+        population.append([w, v, x, 0])
+        x = x + 1
+
+print(population)
+
+group = [2, 2, 2]
+
+rplay = 0
+lplay = 0
+
+# The for loop does the 10000 matches.
+
+for count in range(10000):
+
+#   Choose the group size.
+
+    size = random.choice(group)
+
+#   Choose the appropriate number of people randomly from the population.
+
+    meeting = random.sample(population, size)
+
+    print(meeting)
+
+#   Initialise the number of men, women, and sexist remarks.
+
+    right = 0
+    left = 0
+    rplay = 0
+    lplay = 0
+
+#   Count the number of men and women in the group.
+
+    for i, v in enumerate(meeting):
+        if v[0] == 'right':
+            right = right + 1
+        else:
+            left = left + 1
+
+    print(right)
+    print(left)
+
+#   Check for hand.
+#   First, if match up is r vs left increase the count of games lefties have encountered.
+
+    if right == left:
+        for i, v in enumerate(meeting):
+            if v[0] == 'right':
+                if v[1] >= random.random():
+                    rplay = rplay + 1
+
+#   Next, if match up is l vs right, do the same for right. This should be "equal to or greater", but I think using elif here means that this section is skipped when the numbers are equal. Given that equal numbers will be rare, that shouldn't affect the results too much, but there was a logic problem in the code.
+
+    if left == right:
+        for i, v in enumerate(meeting):
+            if v[0] == 'left':
+                if v[1] >= random.random():
+                    lplay = lplay + 1
+
+#   For every righty in match, add the number of games to the number of lefties he has encountered. Then copy him back into the population. (I suspect that this is unnecessary, because Python actually operates on the elements on the population rather than on clones, but having taught myself Python to write this code, I'm not sure.)
+
+    for i, v in enumerate(meeting):
+        if v[0] == 'right':
+            v[3] = v[3] + lplay
+            population[v[2]] = v
+
+#   For every woman in the group, add the number of sexist remarks made by men.
+
+        else:
+            v[3] = v[3] + rplay
+            population[v[2]] = v
+
+# Sort the population into order by number of sexist remarks, because the final analysis is done by hand.
+
+population.sort(key=lambda population: population[3])
+
+print('YOOOOOO') 
+
+print(population)
+
